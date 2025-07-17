@@ -1,3 +1,5 @@
+![Modrinth Downloads](https://img.shields.io/modrinth/dt/airplace)
+
 # AirPlace
 AirPlace is a simple Mod to place Blocks in air and render them with a fancy overlay.
 
