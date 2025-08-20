@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -16,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.GameMode;
 
 import static wueffi.airplace.client.PlacementHandler.targetPos;
 
@@ -30,17 +32,24 @@ public class OutlineRenderer {
 
         Vec3d cameraPos = context.camera().getPos();
         MatrixStack matrices = context.matrixStack();
+        assert matrices != null;
         matrices.push();
 
         double x = targetPos.getX() - cameraPos.x;
         double y = targetPos.getY() - cameraPos.y;
         double z = targetPos.getZ() - cameraPos.z;
 
+        ClientPlayerInteractionManager interactionManager = client.interactionManager;
+        assert interactionManager != null;
+        if(interactionManager.getCurrentGameMode() == GameMode.SURVIVAL) {
+            return;
+        }
 
         if (AirPlaceConfig.renderMode == AirPlaceClient.RenderMode.LINES) {
             ItemStack stack = client.player.getMainHandStack();
             if (!(stack.getItem() instanceof BlockItem)) return;
             VertexConsumerProvider vertexConsumers = context.consumers();
+            assert vertexConsumers != null;
             VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 
             float r = AirPlaceConfig.lineR;
@@ -70,6 +79,7 @@ public class OutlineRenderer {
         VertexConsumerProvider vertexConsumers = context.consumers();
         BlockRenderView renderWorld = client.world;
 
+        assert vertexConsumers != null;
         VertexConsumer translucentConsumer = vertexConsumers.getBuffer(RenderLayer.getTranslucent());
         int light = 0xFFFFFF;
 

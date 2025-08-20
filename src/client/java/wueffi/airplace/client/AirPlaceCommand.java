@@ -1,8 +1,8 @@
 package wueffi.airplace.client;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
@@ -79,7 +79,7 @@ public class AirPlaceCommand {
                             .executes(ctx -> {
                                 try {
                                     AirPlaceConfig.load();
-                                    ctx.getSource().sendFeedback(Text.literal(String.format("AirPlace: Config Reloaded!")));
+                                    ctx.getSource().sendFeedback(Text.literal("AirPlace: Config Reloaded!"));
                                 } catch (Exception e) {
                                     ctx.getSource().sendFeedback(Text.literal("AirPlace: Failed to reload Config!"));
                                     return 0;
@@ -92,7 +92,7 @@ public class AirPlaceCommand {
                                 try {
                                     AirPlaceConfig.saveDefault();
                                     AirPlaceConfig.load();
-                                    ctx.getSource().sendFeedback(Text.literal(String.format("AirPlace: Config reset!")));
+                                    ctx.getSource().sendFeedback(Text.literal("AirPlace: Config reset!"));
                                 } catch (Exception e) {
                                     ctx.getSource().sendFeedback(Text.literal("AirPlace: Failed to reset Config!"));
                                     return 0;
@@ -100,6 +100,22 @@ public class AirPlaceCommand {
                                 return 1;
                             })
                     )
+                        .then(ClientCommandManager.literal("setPlaceSpeed")
+                                .then(ClientCommandManager.argument("speed", IntegerArgumentType.integer(1,20))
+                                        .executes(ctx -> {
+                                            Integer speed = IntegerArgumentType.getInteger(ctx, "speed");
+                                            try {
+                                                AirPlaceConfig.setSpeed(speed);
+                                                ctx.getSource().sendFeedback(Text.literal(
+                                                        String.format("AirPlace: Set PlacingSpeed to " + speed + ".")));
+                                            } catch (Exception e) {
+                                                ctx.getSource().sendFeedback(Text.literal("AirPlace: Invalid speed!"));
+                                                return 0;
+                                            }
+                                            return 1;
+                                        })
+                                )
+                        )
                 )
         );
     }

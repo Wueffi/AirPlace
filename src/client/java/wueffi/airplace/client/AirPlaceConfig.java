@@ -13,6 +13,7 @@ public class AirPlaceConfig {
     public static boolean active = false;
     public static AirPlaceClient.RenderMode renderMode = AirPlaceClient.RenderMode.BLOCK;
     public static float lineR = 0.0f, lineG = 0.8f, lineB = 1.0f;
+    public static Integer speed = 5;
 
     public static void load() {
         Path configDir = FabricLoader.getInstance().getConfigDir();
@@ -25,6 +26,7 @@ public class AirPlaceConfig {
                 lineR = Float.parseFloat(props.getProperty("lineR", "0.0"));
                 lineG = Float.parseFloat(props.getProperty("lineG", "0.8"));
                 lineB = Float.parseFloat(props.getProperty("lineB", "1.0"));
+                speed = Integer.parseInt(props.getProperty("speed", "5"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -37,6 +39,7 @@ public class AirPlaceConfig {
         props.setProperty("lineR", String.valueOf(lineR));
         props.setProperty("lineG", String.valueOf(lineG));
         props.setProperty("lineB", String.valueOf(lineB));
+        props.setProperty("speed", String.valueOf(speed));
 
         Path configDir = FabricLoader.getInstance().getConfigDir();
         File file = configDir.resolve(FILE_NAME).toFile();
@@ -54,6 +57,7 @@ public class AirPlaceConfig {
         props.setProperty("lineR", "1.0");
         props.setProperty("lineG", "0.0");
         props.setProperty("lineB", "0.0");
+        props.setProperty("speed", "5");
 
         Path configDir = FabricLoader.getInstance().getConfigDir();
         File file = configDir.resolve(FILE_NAME).toFile();
@@ -72,6 +76,11 @@ public class AirPlaceConfig {
         save();
     }
 
+    public static void setSpeed(Integer NewSpeed) {
+        speed = NewSpeed;
+        save();
+    }
+
     public static void setActive(boolean val) {
         active = val;
         save();
@@ -82,11 +91,7 @@ public class AirPlaceConfig {
         save();
     }
 
-    public static boolean isActive() {
-        return active;
-    }
-
-    public static AirPlaceClient.RenderMode getRenderMode() {
-        return renderMode;
+    public static Integer getSpeed() {
+        return speed;
     }
 }

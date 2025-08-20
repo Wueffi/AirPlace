@@ -1,8 +1,11 @@
 package wueffi.airplace.client;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -10,16 +13,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.GameMode;
 
-import static wueffi.airplace.client.AirPlaceClient.placeKey;
+import java.util.Objects;
 
 public class PlacementHandler {
 
+    private static final KeyBinding placeKey = MinecraftClient.getInstance().options.useKey;
     public static BlockPos targetPos = new BlockPos(0,0,0);
     public static long lastPlaceTick = -20;
 
     public static void tick(MinecraftClient client) {
         if (!AirPlaceConfig.active || client == null || client.player == null || client.world == null) return;
+
+        ClientPlayerInteractionManager interactionManager = client.interactionManager;
+        assert interactionManager != null;
+        if(interactionManager.getCurrentGameMode() == GameMode.SURVIVAL) {
+            return;
+        }
 
         long currentTick = client.world.getTime();
 
@@ -47,7 +58,7 @@ public class PlacementHandler {
         }
 
 
-        if (placeKey.isPressed()  && currentTick > lastPlaceTick + 5) {
+        if (placeKey.isPressed()  && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
             lastPlaceTick = client.world.getTime();
             if (!client.world.getBlockState(targetPos).isAir()) return;
 
@@ -62,6 +73,11 @@ public class PlacementHandler {
             );
             assert client.interactionManager != null;
             client.interactionManager.interactBlock(client.player, Hand.MAIN_HAND, placeHit);
+            client.player.swingHand(Hand.MAIN_HAND);
+            Objects.requireNonNull(client.getNetworkHandler()).sendPacket(
+                    new HandSwingC2SPacket(Hand.MAIN_HAND)
+            );
+
         }
     }
 }

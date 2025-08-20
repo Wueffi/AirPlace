@@ -16,7 +16,6 @@ import static wueffi.airplace.client.AirPlaceConfig.active;
 
 public class AirPlaceClient implements ClientModInitializer {
     private static KeyBinding toggleKey;
-    static KeyBinding placeKey;
     public enum RenderMode { BLOCK, LINES}
 
     @Override
@@ -34,12 +33,6 @@ public class AirPlaceClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_F7,
                 "category.airplace"
         ));
-        placeKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.airplace.place",
-                InputUtil.Type.MOUSE,
-                GLFW.GLFW_MOUSE_BUTTON_RIGHT,
-                "category.airplace"
-        ));
 
         LOGGER.info("AirPlace Keybinds registered!");
 
@@ -49,6 +42,7 @@ public class AirPlaceClient implements ClientModInitializer {
                 AirPlaceConfig.setActive(active);
                 AirPlaceConfig.save();
                 if (active) {
+                    assert client.world != null;
                     PlacementHandler.lastPlaceTick = client.world.getTime();
                 }
                 if (client.player != null) {
