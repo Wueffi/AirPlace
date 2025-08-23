@@ -33,11 +33,10 @@ public class AirPlaceClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_F7,
                 "category.airplace"
         ));
-
         LOGGER.info("AirPlace Keybinds registered!");
 
         UpdateHandler.initialize();
-        LOGGER.info("Update Handler initialized! " + net.minecraft.SharedConstants.getGameVersion().getName());
+        LOGGER.info("Update Handler initialized!");
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggleKey.wasPressed()) {
