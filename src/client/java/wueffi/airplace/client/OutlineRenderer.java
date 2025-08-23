@@ -14,7 +14,6 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.util.math.random.Random;
@@ -83,13 +82,15 @@ public class OutlineRenderer {
         assert vertexConsumers != null;
         VertexConsumer translucentConsumer = vertexConsumers.getBuffer(RenderLayer.getTranslucent());
 
+        VertexConsumer darkConsumer = new TintingVertexConsumer(translucentConsumer, 0.6f, 0.6f, 0.6f, 0.8f);
+
         renderManager.getModelRenderer().render(
                 renderWorld,
                 model,
                 state,
-                BlockPos.ORIGIN,
+                targetPos,
                 matrices,
-                translucentConsumer,
+                darkConsumer,
                 false,
                 Random.create(),
                 42L,
@@ -129,4 +130,53 @@ public class OutlineRenderer {
                 .color(r, g, b, a)
                 .normal(0.0f, 1.0f, 0.0f);
     }
+
+    static class TintingVertexConsumer implements VertexConsumer {
+        private final VertexConsumer delegate;
+        private final float rMul, gMul, bMul, aMul;
+
+        TintingVertexConsumer(VertexConsumer delegate, float rMul, float gMul, float bMul, float aMul) {
+            this.delegate = delegate;
+            this.rMul = rMul;
+            this.gMul = gMul;
+            this.bMul = bMul;
+            this.aMul = aMul;
+        }
+
+        @Override
+        public VertexConsumer vertex(float x, float y, float z) {
+            return delegate.vertex(x, y, z);
+        }
+
+        @Override
+        public VertexConsumer color(int r, int g, int b, int a) {
+            return delegate.color(
+                    (int)(r * rMul),
+                    (int)(g * gMul),
+                    (int)(b * bMul),
+                    (int)(a * aMul)
+            );
+        }
+
+        @Override
+        public VertexConsumer texture(float u, float v) {
+            return delegate.texture(u, v);
+        }
+
+        @Override
+        public VertexConsumer overlay(int u, int v) {
+            return delegate.overlay(u, v);
+        }
+
+        @Override
+        public VertexConsumer light(int u, int v) {
+            return delegate.light(u, v);
+        }
+
+        @Override
+        public VertexConsumer normal(float x, float y, float z) {
+            return delegate.normal(x, y, z);
+        }
+    }
+
 }
