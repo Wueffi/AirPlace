@@ -36,6 +36,9 @@ public class AirPlaceClient implements ClientModInitializer {
 
         LOGGER.info("AirPlace Keybinds registered!");
 
+        UpdateHandler.initialize();
+        LOGGER.info("Update Handler initialized! " + net.minecraft.SharedConstants.getGameVersion().getName());
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggleKey.wasPressed()) {
                 active = !active;

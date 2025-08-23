@@ -1,14 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "wueffi.airplace.client",
+  "package": "wueffi.airplace",
   "compatibilityLevel": "JAVA_21",
   "client": [],
   "injectors": {
     "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
-  },
-  "mixins": []
+  }
 }

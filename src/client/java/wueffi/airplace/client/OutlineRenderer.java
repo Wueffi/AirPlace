@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -81,7 +82,6 @@ public class OutlineRenderer {
 
         assert vertexConsumers != null;
         VertexConsumer translucentConsumer = vertexConsumers.getBuffer(RenderLayer.getTranslucent());
-        int light = 0xFFFFFF;
 
         renderManager.getModelRenderer().render(
                 renderWorld,
@@ -93,7 +93,7 @@ public class OutlineRenderer {
                 false,
                 Random.create(),
                 42L,
-                light
+                OverlayTexture.DEFAULT_UV
         );
         matrices.pop();
     }

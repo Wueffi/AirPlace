@@ -77,7 +77,6 @@ public class PlacementHandler {
             Objects.requireNonNull(client.getNetworkHandler()).sendPacket(
                     new HandSwingC2SPacket(Hand.MAIN_HAND)
             );
-
         }
     }
 }
