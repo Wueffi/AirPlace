@@ -2,6 +2,7 @@ package wueffi.airplace.client;
 
 import com.google.gson.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -19,7 +20,7 @@ import static wueffi.airplace.AirPlaceMain.LOGGER;
 public class UpdateHandler {
     private static final String CURRENT_VERSION = net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("airplace").get().getMetadata().getVersion().getFriendlyString();
     private static final String PROJECT_SLUG = "airplace";
-    private static final String GAME_VERSION = net.minecraft.SharedConstants.getGameVersion().getName();
+    private static final String GAME_VERSION = FabricLoader.getInstance().getModContainer("minecraft").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("1.21.8");
     private static final String LOADER = "fabric";
 
     private static String latestVersion = null;
