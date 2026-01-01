@@ -3,11 +3,12 @@ package wueffi.airplace.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import static wueffi.airplace.AirPlaceMain.LOGGER;
@@ -31,7 +32,7 @@ public class AirPlaceClient implements ClientModInitializer {
                 "key.airplace.toggle",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_F7,
-                "category.airplace"
+                new KeyBinding.Category(Identifier.of("category.airplace"))
         ));
         LOGGER.info("AirPlace Keybinds registered!");
 
@@ -54,7 +55,8 @@ public class AirPlaceClient implements ClientModInitializer {
             }
         });
 
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(OutlineRenderer::render);
+
+        WorldRenderEvents.BEFORE_TRANSLUCENT.register(OutlineRenderer::render);
         ClientTickEvents.END_CLIENT_TICK.register(PlacementHandler::tick);
     }
 }
