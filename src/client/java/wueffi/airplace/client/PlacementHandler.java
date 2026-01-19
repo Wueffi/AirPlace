@@ -1,7 +1,6 @@
 package wueffi.airplace.client;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -13,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.GameMode;
 
 import java.util.Objects;
 
@@ -26,11 +24,7 @@ public class PlacementHandler {
     public static void tick(MinecraftClient client) {
         if (!AirPlaceConfig.active || client == null || client.player == null || client.world == null) return;
 
-        ClientPlayerInteractionManager interactionManager = client.interactionManager;
-        assert interactionManager != null;
-        if(interactionManager.getCurrentGameMode() == GameMode.SURVIVAL) {
-            return;
-        }
+        assert client.interactionManager != null;
 
         long currentTick = client.world.getTime();
 
@@ -71,7 +65,6 @@ public class PlacementHandler {
                     targetPos,
                     false
             );
-            assert client.interactionManager != null;
             client.interactionManager.interactBlock(client.player, Hand.MAIN_HAND, placeHit);
             client.player.swingHand(Hand.MAIN_HAND);
             Objects.requireNonNull(client.getNetworkHandler()).sendPacket(

@@ -196,7 +196,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.GameMode;
 
 import java.lang.reflect.Method;
 
@@ -227,9 +226,6 @@ public class OutlineRenderer {
 
         ClientPlayerInteractionManager interactionManager = client.interactionManager;
         assert interactionManager != null;
-        if (client.player.getGameMode() == GameMode.SURVIVAL) {
-            return;
-        }
 
         if (AirPlaceConfig.renderMode == AirPlaceClient.RenderMode.LINES) {
             ItemStack stack = client.player.getMainHandStack();
