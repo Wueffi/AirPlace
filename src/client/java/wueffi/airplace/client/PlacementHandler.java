@@ -5,17 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Objects;
 
 public class PlacementHandler {
 
@@ -57,7 +53,7 @@ public class PlacementHandler {
         }
 
 
-        if (placeKey.consumeClick()  && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
+        if (placeKey.isDown()  && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
             lastPlaceTick = client.level.getGameTime();
             if (!client.level.getBlockState(targetPos).isAir()) return;
 
