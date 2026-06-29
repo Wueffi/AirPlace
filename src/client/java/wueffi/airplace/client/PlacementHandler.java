@@ -1,82 +1,78 @@
 package wueffi.airplace.client;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.GameMode;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 
 public class PlacementHandler {
 
-    private static final KeyBinding placeKey = MinecraftClient.getInstance().options.useKey;
+    private static final KeyMapping placeKey = Minecraft.getInstance().options.keyUse;
     public static BlockPos targetPos = new BlockPos(0,0,0);
     public static long lastPlaceTick = -20;
 
-    public static void tick(MinecraftClient client) {
-        if (!AirPlaceConfig.active || client == null || client.player == null || client.world == null) return;
+    public static void tick(Minecraft client) {
+        if (!AirPlaceConfig.active || client == null || client.player == null || client.level == null) return;
 
-        ClientPlayerInteractionManager interactionManager = client.interactionManager;
-        assert interactionManager != null;
-        if(interactionManager.getCurrentGameMode() == GameMode.SURVIVAL) {
+        MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
+        assert gameMode != null;
+        if (gameMode.getPlayerMode() == GameType.SURVIVAL) {
             return;
         }
 
-        long currentTick = client.world.getTime();
+        long currentTick = client.level.getGameTime();
 
-        Vec3d eyePos = client.player.getCameraPosVec(1.0F);
-        Vec3d lookVec = client.player.getRotationVec(1.0F);
-        Vec3d end = eyePos.add(lookVec.multiply(5.0D));
-        BlockHitResult hitResult = client.world.raycast(
-                new net.minecraft.world.RaycastContext(
+        Vec3 eyePos = client.player.getEyePosition(1.0F);
+        Vec3 lookVec = client.player.getViewVector(1.0F);
+        Vec3 end = eyePos.add(lookVec.scale(5.0D));
+        BlockHitResult hitResult = client.level.clip(
+                new ClipContext(
                         eyePos, end,
-                        net.minecraft.world.RaycastContext.ShapeType.OUTLINE,
-                        net.minecraft.world.RaycastContext.FluidHandling.NONE,
+                        ClipContext.Block.OUTLINE,
+                        ClipContext.Fluid.NONE,
                         client.player
                 )
         );
 
         Direction face;
 
-        if (hitResult.getType() == HitResult.Type.BLOCK) {
-            face = hitResult.getSide();
-            targetPos = hitResult.getBlockPos().offset(face);
+        if (hitResult.getType() == BlockHitResult.Type.BLOCK) {
+            face = hitResult.getDirection();
+            targetPos = hitResult.getBlockPos().relative(face);
         } else {
-            Vec3i vec3i = new Vec3i((int)Math.floor(end.x), (int)Math.floor(end.y), (int)Math.floor(end.z));
-            targetPos = new BlockPos(vec3i);
-            face = Direction.getFacing(lookVec.x, lookVec.y, lookVec.z);
+            targetPos = BlockPos.containing(end);
+            face = Direction.getNearest((int)lookVec.x, (int)lookVec.y, (int)lookVec.z, Direction.NORTH);
         }
 
 
-        if (placeKey.isPressed()  && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
-            lastPlaceTick = client.world.getTime();
-            if (!client.world.getBlockState(targetPos).isAir()) return;
+        if (placeKey.consumeClick()  && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
+            lastPlaceTick = client.level.getGameTime();
+            if (!client.level.getBlockState(targetPos).isAir()) return;
 
-            ItemStack stack = client.player.getMainHandStack();
+            ItemStack stack = client.player.getMainHandItem();
             if (!(stack.getItem() instanceof BlockItem)) return;
 
             BlockHitResult placeHit = new BlockHitResult(
-                    Vec3d.ofCenter(targetPos),
+                    Vec3.atCenterOf(targetPos),
                     face,
                     targetPos,
                     false
             );
-            assert client.interactionManager != null;
-            client.interactionManager.interactBlock(client.player, Hand.MAIN_HAND, placeHit);
-            client.player.swingHand(Hand.MAIN_HAND);
-            Objects.requireNonNull(client.getNetworkHandler()).sendPacket(
-                    new HandSwingC2SPacket(Hand.MAIN_HAND)
-            );
+
+            gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, placeHit);
+            client.player.swing(InteractionHand.MAIN_HAND);
         }
     }
 }

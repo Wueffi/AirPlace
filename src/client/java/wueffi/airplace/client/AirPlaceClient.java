@@ -1,22 +1,21 @@
 package wueffi.airplace.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import static wueffi.airplace.AirPlaceMain.LOGGER;
 import static wueffi.airplace.client.AirPlaceConfig.active;
 
 
 public class AirPlaceClient implements ClientModInitializer {
-    private static KeyBinding toggleKey;
+    private static KeyMapping toggleKey;
     public enum RenderMode { BLOCK, LINES}
 
     @Override
@@ -28,11 +27,10 @@ public class AirPlaceClient implements ClientModInitializer {
         });
 
         LOGGER.info("AirPlace commands registered!");
-        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.airplace.toggle",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_F7,
-                new KeyBinding.Category(Identifier.of("category.airplace"))
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.airplace.toggle_airplace",
+                InputConstants.KEY_F8,
+                KeyMapping.Category.register(Identifier.parse("category.airplace"))
         ));
         LOGGER.info("AirPlace Keybinds registered!");
 
@@ -40,23 +38,23 @@ public class AirPlaceClient implements ClientModInitializer {
         LOGGER.info("Update Handler initialized!");
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (toggleKey.wasPressed()) {
+            while (toggleKey.consumeClick()) {
                 active = !active;
                 AirPlaceConfig.setActive(active);
                 AirPlaceConfig.save();
                 if (active) {
-                    assert client.world != null;
-                    PlacementHandler.lastPlaceTick = client.world.getTime();
+                    assert client.level != null;
+                    PlacementHandler.lastPlaceTick = client.level.getGameTime();
                 }
                 if (client.player != null) {
-                    client.player.sendMessage(Text.literal("AirPlace: " + (active ? "ON" : "OFF")), true);
+                    client.player.sendSystemMessage(Component.literal("AirPlace: " + (active ? "ON" : "OFF")));
                     LOGGER.info("AirPlace toggled {}", active ? "ON" : "OFF");
                 }
             }
         });
 
 
-        WorldRenderEvents.BEFORE_TRANSLUCENT.register(OutlineRenderer::render);
+        LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(OutlineRenderer::render);
         ClientTickEvents.END_CLIENT_TICK.register(PlacementHandler::tick);
     }
 }

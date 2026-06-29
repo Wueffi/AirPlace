@@ -3,8 +3,8 @@ package wueffi.airplace.client;
 import com.google.gson.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -36,33 +36,29 @@ public class UpdateHandler {
                         if (client.player == null) return;
 
                         if (latestVersion == null) {
-                            client.player.sendMessage(
-                                    Text.literal("§cCould not find a fitting AirPlace Version! (Network Error)"),
-                                    false
+                            client.player.sendSystemMessage(
+                                    Component.literal("§cCould not find a fitting AirPlace Version! (Network Error)")
                             );
                             return;
                         }
 
                         int cmp = compareVersions(CURRENT_VERSION, latestVersion);
                         if (cmp < 0) {
-                            client.player.sendMessage(
-                                    Text.literal("§7[§6AirPlace§7]§a A new version of AirPlace is available: " + latestVersion +
+                            client.player.sendSystemMessage(
+                                    Component.literal("§7[§6AirPlace§7]§a A new version of AirPlace is available: " + latestVersion +
                                                     " (you are on " + CURRENT_VERSION + ")")
-                                            .formatted(Formatting.YELLOW),
-                                    false
+                                            .withStyle(ChatFormatting.YELLOW)
                             );
                         } else if (cmp == 0) {
-                            client.player.sendMessage(
-                                    Text.literal("§7[§6AirPlace§7]§a You are running the latest version of AirPlace (" + CURRENT_VERSION + ")")
-                                            .formatted(Formatting.GREEN),
-                                    false
+                            client.player.sendSystemMessage(
+                                    Component.literal("§7[§6AirPlace§7]§a You are running the latest version of AirPlace (" + CURRENT_VERSION + ")")
+                                            .withStyle(ChatFormatting.GREEN)
                             );
                         } else {
-                            client.player.sendMessage(
-                                    Text.literal("§7[§6AirPlace§7]§a You are running a newer version of AirPlace (" + CURRENT_VERSION +
+                            client.player.sendSystemMessage(
+                                    Component.literal("§7[§6AirPlace§7]§a You are running a newer version of AirPlace (" + CURRENT_VERSION +
                                                     ") than the latest (" + latestVersion + ")")
-                                            .formatted(Formatting.AQUA),
-                                    false
+                                            .withStyle(ChatFormatting.AQUA)
                             );
                         }
                     });

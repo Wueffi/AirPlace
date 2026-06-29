@@ -3,34 +3,34 @@ package wueffi.airplace.client;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class AirPlaceCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("airplace")
-                .then(ClientCommandManager.literal("on")
+        dispatcher.register(ClientCommands.literal("airplace")
+                .then(ClientCommands.literal("on")
                         .executes(ctx -> {
                             AirPlaceConfig.setActive(true);
-                            ctx.getSource().sendFeedback(Text.literal("AirPlace: ON"));
+                            ctx.getSource().sendFeedback(Component.literal("AirPlace: ON"));
                             return 1;
                         }))
-                .then(ClientCommandManager.literal("off")
+                .then(ClientCommands.literal("off")
                         .executes(ctx -> {
                             AirPlaceConfig.setActive(false);
-                            ctx.getSource().sendFeedback(Text.literal("AirPlace: OFF"));
+                            ctx.getSource().sendFeedback(Component.literal("AirPlace: OFF"));
                             return 1;
                         }))
-                .then(ClientCommandManager.literal("toggle")
+                .then(ClientCommands.literal("toggle")
                         .executes(ctx -> {
                             boolean newState = !AirPlaceConfig.active;
                             AirPlaceConfig.setActive(newState);
-                            ctx.getSource().sendFeedback(Text.literal("AirPlace: " + (newState ? "ON" : "OFF")));
+                            ctx.getSource().sendFeedback(Component.literal("AirPlace: " + (newState ? "ON" : "OFF")));
                             return 1;
                         }))
-                .then(ClientCommandManager.literal("renderMode")
-                        .then(ClientCommandManager.argument("mode", StringArgumentType.word())
+                .then(ClientCommands.literal("renderMode")
+                        .then(ClientCommands.argument("mode", StringArgumentType.word())
                                 .suggests((c, b) -> {
                                     b.suggest("lines");
                                     b.suggest("block");
@@ -42,22 +42,22 @@ public class AirPlaceCommand {
                                         AirPlaceClient.RenderMode rm =
                                                 mode.equalsIgnoreCase("lines") ? AirPlaceClient.RenderMode.LINES : AirPlaceClient.RenderMode.BLOCK;
                                         AirPlaceConfig.setRenderMode(rm);
-                                        ctx.getSource().sendFeedback(Text.literal("AirPlace: Render mode set to " + mode));
+                                        ctx.getSource().sendFeedback(Component.literal("AirPlace: Render mode set to " + mode));
                                     } catch (Exception e) {
-                                        ctx.getSource().sendFeedback(Text.literal("AirPlace: Invalid render mode! Valid: lines, block"));
+                                        ctx.getSource().sendFeedback(Component.literal("AirPlace: Invalid render mode! Valid: lines, block"));
                                     }
                                     return 1;
                                 })
                         )
                 )
-                .then(ClientCommandManager.literal("config")
-                    .then(ClientCommandManager.literal("setcolor")
-                            .then(ClientCommandManager.argument("rgb", StringArgumentType.string())
+                .then(ClientCommands.literal("config")
+                    .then(ClientCommands.literal("setcolor")
+                            .then(ClientCommands.argument("rgb", StringArgumentType.string())
                                     .executes(ctx -> {
                                         String rgb = StringArgumentType.getString(ctx, "rgb");
                                         String[] parts = rgb.split(" ");
                                         if (parts.length != 3) {
-                                            ctx.getSource().sendFeedback(Text.literal("AirPlace: Usage /airplace setcolor \"<R> <G> <B>\" (0-255)"));
+                                            ctx.getSource().sendFeedback(Component.literal("AirPlace: Usage /airplace setcolor \"<R> <G> <B>\" (0-255)"));
                                             return 0;
                                         }
                                         try {
@@ -65,51 +65,51 @@ public class AirPlaceCommand {
                                             float g = (float) Integer.parseInt(parts[1]) / 255;
                                             float b = (float) Integer.parseInt(parts[2]) / 255;
                                             AirPlaceConfig.setColor(r, g, b);
-                                            ctx.getSource().sendFeedback(Text.literal(
+                                            ctx.getSource().sendFeedback(Component.literal(
                                                     String.format("AirPlace: Set line color to R=%.2f G=%.2f B=%.2f", r, g, b)));
                                         } catch (Exception e) {
-                                            ctx.getSource().sendFeedback(Text.literal("AirPlace: Invalid numbers!"));
+                                            ctx.getSource().sendFeedback(Component.literal("AirPlace: Invalid numbers!"));
                                             return 0;
                                         }
                                         return 1;
                                     })
                             )
                     )
-                    .then(ClientCommandManager.literal("reload")
+                    .then(ClientCommands.literal("reload")
                             .executes(ctx -> {
                                 try {
                                     AirPlaceConfig.load();
-                                    ctx.getSource().sendFeedback(Text.literal("AirPlace: Config Reloaded!"));
+                                    ctx.getSource().sendFeedback(Component.literal("AirPlace: Config Reloaded!"));
                                 } catch (Exception e) {
-                                    ctx.getSource().sendFeedback(Text.literal("AirPlace: Failed to reload Config!"));
+                                    ctx.getSource().sendFeedback(Component.literal("AirPlace: Failed to reload Config!"));
                                     return 0;
                                 }
                                 return 1;
                             })
                     )
-                    .then(ClientCommandManager.literal("reset")
+                    .then(ClientCommands.literal("reset")
                             .executes(ctx -> {
                                 try {
                                     AirPlaceConfig.saveDefault();
                                     AirPlaceConfig.load();
-                                    ctx.getSource().sendFeedback(Text.literal("AirPlace: Config reset!"));
+                                    ctx.getSource().sendFeedback(Component.literal("AirPlace: Config reset!"));
                                 } catch (Exception e) {
-                                    ctx.getSource().sendFeedback(Text.literal("AirPlace: Failed to reset Config!"));
+                                    ctx.getSource().sendFeedback(Component.literal("AirPlace: Failed to reset Config!"));
                                     return 0;
                                 }
                                 return 1;
                             })
                     )
-                        .then(ClientCommandManager.literal("setPlaceSpeed")
-                                .then(ClientCommandManager.argument("speed", IntegerArgumentType.integer(1,20))
+                        .then(ClientCommands.literal("setPlaceSpeed")
+                                .then(ClientCommands.argument("speed", IntegerArgumentType.integer(1,20))
                                         .executes(ctx -> {
                                             Integer speed = IntegerArgumentType.getInteger(ctx, "speed");
                                             try {
                                                 AirPlaceConfig.setSpeed(speed);
-                                                ctx.getSource().sendFeedback(Text.literal(
+                                                ctx.getSource().sendFeedback(Component.literal(
                                                         String.format("AirPlace: Set PlacingSpeed to " + speed + ".")));
                                             } catch (Exception e) {
-                                                ctx.getSource().sendFeedback(Text.literal("AirPlace: Invalid speed!"));
+                                                ctx.getSource().sendFeedback(Component.literal("AirPlace: Invalid speed!"));
                                                 return 0;
                                             }
                                             return 1;
