@@ -3,17 +3,13 @@ package wueffi.airplace.client;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockModelSet;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelManager;
@@ -28,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.GameType;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,10 +146,12 @@ public class OutlineRenderer {
                                  float r, float g, float b, float a) {
         consumer.addVertex(entry.pose(), (float)x1, (float)y1, (float)z1)
                 .setColor(r, g, b, a)
-                .setNormal(0.0f, 1.0f, 0.0f);
+                .setNormal(entry, 0.0f, 1.0f, 0.0f)
+                .setLineWidth(2.5f);
         consumer.addVertex(entry.pose(), (float)x2, (float)y2, (float)z2)
                 .setColor(r, g, b, a)
-                .setNormal(0.0f, 1.0f, 0.0f);
+                .setNormal(entry, 0.0f, 1.0f, 0.0f)
+                .setLineWidth(2.5f);
     }
 
     private static VertexConsumer getTranslucentConsumer(MultiBufferSource bufferSource, BlockStateModel model) {
