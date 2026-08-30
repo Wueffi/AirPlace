@@ -12,12 +12,17 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import wueffi.airplace.client.compat.ControllableCompat;
 
 public class PlacementHandler {
 
     private static final KeyMapping placeKey = Minecraft.getInstance().options.keyUse;
     public static BlockPos targetPos = new BlockPos(0,0,0);
     public static long lastPlaceTick = -20;
+
+    public static boolean isPlaceKeyDown() {
+        return placeKey.isDown() || ControllableCompat.isPlacePressed();
+    }
 
     public static void tick(Minecraft client) {
         if (!AirPlaceConfig.active || client == null || client.player == null || client.level == null) return;
@@ -53,7 +58,7 @@ public class PlacementHandler {
         }
 
 
-        if (placeKey.isDown()  && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
+        if (isPlaceKeyDown() && currentTick > lastPlaceTick + AirPlaceConfig.getSpeed()) {
             lastPlaceTick = client.level.getGameTime();
             if (!client.level.getBlockState(targetPos).isAir()) return;
 

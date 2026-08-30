@@ -37,6 +37,8 @@ public class AirPlaceClient implements ClientModInitializer {
         UpdateHandler.initialize();
         LOGGER.info("Update Handler initialized!");
 
+        wueffi.airplace.client.compat.ControllableCompat.init();
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggleKey.consumeClick()) {
                 active = !active;
