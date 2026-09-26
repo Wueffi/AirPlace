@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -68,7 +69,7 @@ public class PlacementHandler {
             );
 
             gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, placeHit);
-            client.player.swing(InteractionHand.MAIN_HAND);
+            client.player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, true);
         }
     }
 }
