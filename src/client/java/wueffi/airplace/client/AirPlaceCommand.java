@@ -75,6 +75,20 @@ public class AirPlaceCommand {
                                     })
                             )
                     )
+                    .then(ClientCommands.literal("setdistance")
+                            .then(ClientCommands.argument("distance", IntegerArgumentType.integer())
+                                    .executes(ctx -> {
+                                        int distance = IntegerArgumentType.getInteger(ctx, "distance");
+                                        if (distance <= 0 || distance > 12) {
+                                            ctx.getSource().sendFeedback(Component.literal("AirPlace: Set the placement distance to a value from 1 - 12."));
+                                            return 0;
+                                        }
+                                        AirPlaceConfig.setDistance(distance);
+                                        ctx.getSource().sendFeedback(Component.literal("AirPlace: Set placement distance to " + distance));
+                                        return 1;
+                                    })
+                            )
+                    )
                     .then(ClientCommands.literal("reload")
                             .executes(ctx -> {
                                 try {

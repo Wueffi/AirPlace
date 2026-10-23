@@ -13,3 +13,4 @@ AirPlace is a simple Mod to place Blocks in air and render them with a fancy ove
 - `/airplace renderMode <block|lines>`: Toggle the renderMode of AirPlace.
 - `/airplace config <reset|reload>`: Reset or Reload the config.
 - - `/airplace config setcolor "<R> <G> <B>`: Set the color of the overlay.
+- - `/airplace config setdistance <distance>`: Set the placement distance of AirPlace.

@@ -33,7 +33,7 @@ public class PlacementHandler {
 
         Vec3 eyePos = client.player.getEyePosition(1.0F);
         Vec3 lookVec = client.player.getViewVector(1.0F);
-        Vec3 end = eyePos.add(lookVec.scale(5.0D));
+        Vec3 end = eyePos.add(lookVec.scale(Double.valueOf(AirPlaceConfig.distance)));
         BlockHitResult hitResult = client.level.clip(
                 new ClipContext(
                         eyePos, end,

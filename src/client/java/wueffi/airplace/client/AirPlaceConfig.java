@@ -14,6 +14,7 @@ public class AirPlaceConfig {
     public static AirPlaceClient.RenderMode renderMode = AirPlaceClient.RenderMode.BLOCK;
     public static float lineR = 0.0f, lineG = 0.8f, lineB = 1.0f;
     public static Integer speed = 5;
+    public static Integer distance = 5;
 
     public static void load() {
         Path configDir = FabricLoader.getInstance().getConfigDir();
@@ -27,6 +28,7 @@ public class AirPlaceConfig {
                 lineG = Float.parseFloat(props.getProperty("lineG", "0.8"));
                 lineB = Float.parseFloat(props.getProperty("lineB", "1.0"));
                 speed = Integer.parseInt(props.getProperty("speed", "5"));
+                distance = Integer.parseInt(props.getProperty("distance", "5"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -40,6 +42,7 @@ public class AirPlaceConfig {
         props.setProperty("lineG", String.valueOf(lineG));
         props.setProperty("lineB", String.valueOf(lineB));
         props.setProperty("speed", String.valueOf(speed));
+        props.setProperty("distance", String.valueOf(distance));
 
         Path configDir = FabricLoader.getInstance().getConfigDir();
         File file = configDir.resolve(FILE_NAME).toFile();
@@ -88,6 +91,11 @@ public class AirPlaceConfig {
 
     public static void setRenderMode(AirPlaceClient.RenderMode mode) {
         renderMode = mode;
+        save();
+    }
+
+    public static void setDistance(Integer newDistance) {
+        distance = newDistance;
         save();
     }
 
